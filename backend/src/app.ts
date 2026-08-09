@@ -8,6 +8,7 @@ import authRoutes from "./modules/auth/auth.routes";
 import patientRoutes from "./modules/patients/patient.routes";
 import caregiverRoutes from "./modules/caregivers/caregiver.routes";
 import safeZoneRoutes from "./modules/safe-zones/safe-zone.routes";
+import locationRoutes from "./modules/locations/location.routes";
 
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/patients", patientRoutes);
 app.use("/api/v1/caregivers", caregiverRoutes);
 app.use("/api/v1", safeZoneRoutes);
+app.use("/api/v1", locationRoutes);
 
 app.get("/health", (_req, res) => {
   res.status(200).json({
