@@ -7,7 +7,7 @@ import { testDatabaseConnection } from "./config/database";
 import authRoutes from "./modules/auth/auth.routes";
 import patientRoutes from "./modules/patients/patient.routes";
 import caregiverRoutes from "./modules/caregivers/caregiver.routes";
-
+import safeZoneRoutes from "./modules/safe-zones/safe-zone.routes";
 
 
 dotenv.config();
@@ -24,6 +24,7 @@ app.use(morgan("dev"));
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/patients", patientRoutes);
 app.use("/api/v1/caregivers", caregiverRoutes);
+app.use("/api/v1", safeZoneRoutes);
 
 app.get("/health", (_req, res) => {
   res.status(200).json({
