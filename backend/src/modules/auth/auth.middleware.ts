@@ -41,6 +41,8 @@ export const authenticate = (
       role: "patient" | "caregiver" | "admin";
     };
 
+console.log("Decoded JWT:", decoded);   // 👈 Add here
+
     req.user = {
       userId: decoded.userId,
       role: decoded.role,

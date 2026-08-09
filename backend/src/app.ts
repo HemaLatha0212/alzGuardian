@@ -5,6 +5,10 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import { testDatabaseConnection } from "./config/database";
 import authRoutes from "./modules/auth/auth.routes";
+import patientRoutes from "./modules/patients/patient.routes";
+import caregiverRoutes from "./modules/caregivers/caregiver.routes";
+
+
 
 dotenv.config();
 
@@ -18,6 +22,8 @@ app.use(morgan("dev"));
 
 // then routes
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/patients", patientRoutes);
+app.use("/api/v1/caregivers", caregiverRoutes);
 
 app.get("/health", (_req, res) => {
   res.status(200).json({
