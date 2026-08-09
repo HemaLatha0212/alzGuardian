@@ -73,3 +73,27 @@ export const createSafeZone = async (
 
   return result.rows[0];
 };
+
+export const getPatientSafeZones = async (patientId: string) => {
+  const result = await pool.query(
+    `
+    SELECT
+      id,
+      patient_id,
+      name,
+      ST_Y(center::geometry) AS latitude,
+      ST_X(center::geometry) AS longitude,
+      radius_meters,
+      is_active,
+      created_at,
+      updated_at
+    FROM safe_zones
+    WHERE patient_id = $1
+      AND is_active = true
+    ORDER BY created_at DESC
+    `,
+    [patientId]
+  );
+
+  return result.rows;
+};

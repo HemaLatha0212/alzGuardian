@@ -5,6 +5,7 @@ import {
   patientExists,
   createSafeZone,
 } from "./safe-zone.service";
+import { getPatientSafeZones } from "./safe-zone.service";
 
 export const createSafeZoneController = async (
   req: AuthenticatedRequest,
@@ -106,6 +107,58 @@ export const createSafeZoneController = async (
 
     return res.status(500).json({
       error: "Unable to create safe zone",
+    });
+  }
+};
+
+export const getPatientSafeZonesController = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        error: "Authentication required",
+      });
+    }
+
+    if (req.user.role !== "caregiver") {
+      return res.status(403).json({
+        error: "Only caregivers can view safe zones",
+      });
+    }
+
+    const { patientId } = req.params;
+
+    const exists = await patientExists(patientId);
+
+    if (!exists) {
+      return res.status(404).json({
+        error: "Patient not found",
+      });
+    }
+
+    const authorized = await isCaregiverAuthorizedForPatient(
+      req.user.userId,
+      patientId
+    );
+
+    if (!authorized) {
+      return res.status(403).json({
+        error: "You are not authorized to view this patient",
+      });
+    }
+
+    const safeZones = await getPatientSafeZones(patientId);
+
+    return res.status(200).json({
+      safeZones,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      error: "Unable to retrieve safe zones",
     });
   }
 };
