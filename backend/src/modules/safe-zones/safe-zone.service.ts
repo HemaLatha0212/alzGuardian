@@ -97,3 +97,80 @@ export const getPatientSafeZones = async (patientId: string) => {
 
   return result.rows;
 };
+
+export const getSafeZoneById = async (safeZoneId: string) => {
+  const result = await pool.query(
+    `
+    SELECT
+      id,
+      patient_id,
+      name,
+      ST_Y(center::geometry) AS latitude,
+      ST_X(center::geometry) AS longitude,
+      radius_meters,
+      is_active,
+      created_at,
+      updated_at
+    FROM safe_zones
+    WHERE id = $1
+    `,
+    [safeZoneId]
+  );
+
+  return result.rows[0];
+};
+
+export const updateSafeZone = async (
+  safeZoneId: string,
+  name: string,
+  latitude: number,
+  longitude: number,
+  radiusMeters: number
+) => {
+  const result = await pool.query(
+    `
+    UPDATE safe_zones
+    SET
+      name = $1,
+      center = ST_SetSRID(
+        ST_MakePoint($2, $3),
+        4326
+      )::geography,
+      radius_meters = $4,
+      updated_at = NOW()
+    WHERE id = $5
+    RETURNING
+      id,
+      patient_id,
+      name,
+      ST_Y(center::geometry) AS latitude,
+      ST_X(center::geometry) AS longitude,
+      radius_meters,
+      is_active,
+      created_at,
+      updated_at
+    `,
+    [
+      name,
+      longitude,
+      latitude,
+      radiusMeters,
+      safeZoneId,
+    ]
+  );
+
+  return result.rows[0];
+};
+
+export const deleteSafeZone = async (safeZoneId: string) => {
+  const result = await pool.query(
+    `
+    DELETE FROM safe_zones
+    WHERE id = $1
+    RETURNING id, patient_id
+    `,
+    [safeZoneId]
+  );
+
+  return result.rows[0];
+};
